@@ -439,8 +439,6 @@ https://www.kaggle.com/joeleichter/us-zip-codes-with-lat-and-long
 
 ---------------------------------------
 
-## Colors, Legends, and more
-
 
 
 
