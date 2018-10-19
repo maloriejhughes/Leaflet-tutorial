@@ -1,0 +1,450 @@
+---
+title: "Intro to Interactive Maps with Leaflet"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: "yeti"
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css, echo=FALSE}
+.footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: right;
+}
+
+
+```	
+
+<div class="footer">
+  <p> mhughes@npr.org |  Updated  <script> document.write(new Date().toLocaleDateString()); </script> </p>
+</div>
+<style type="text/css">
+h4.date {
+  text-align: right;
+}
+</style>
+
+---------------------------------------
+
+# 1. Basics
+
+---------------------------------------
+
+##  Load packages and pull data
+
+
+
+
+```{r load}
+library(readr)
+library(tidyverse)
+library(leaflet)
+cluster_demog<-read_csv(
+"http://ec2-54-235-58-226.compute-1.amazonaws.com/storage/f/2014-02-23T17%3A11%3A51.737Z/dc-neighborhood-cluster-demographics.csv")
+```
+
+
+
+##  Blank Map
+
+
+```{r blank}
+leaflet( data = cluster_demog ) %>%
+    addTiles() 
+```
+
+
+
+
+##  Add Markers
+ Add markers with ``` addMarkers()```, specifying the columns for latitude, ```lat```, and longitude, ```lng```, at minimum.
+```{r add_markers}
+leaflet( data = cluster_demog ) %>%
+    
+    addTiles() %>%
+    
+    addMarkers(   lng = cluster_demog$lon_ctr      ### !!! ### 
+                , lat = cluster_demog$lat_ctr        ### !!! ### 
+                )                                  ### !!! ### 
+```
+
+
+##  Change Map "Tiles"
+
+To do this, we swap the default ```addTiles()``` for  ``` addProviderTiles(providers$name_of_desired_tile).```  You can preview the built-in Leaflet tiles [here](http://leaflet-extras.github.io/leaflet-providers/preview/index.html).
+
+
+```{r change_tiles}
+leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles( providers$CartoDB.Positron ) %>%    ### !!! ### 
+   
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat=cluster_demog$lat_ctr 
+                )
+
+```
+
+
+
+```{r night_tiles}
+leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles( providers$NASAGIBS.ViirsEarthAtNight2012 ) %>%    ### !!! ### 
+    
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat = cluster_demog$lat_ctr 
+                )
+
+```
+
+## Set the initial corrdinates and zoom level
+The ```setView()``` utility function with three arguments: latitude, ```lat```, and longitude, ```lng```, and the zoom level, ```zoom```.  
+
+```{r zoom_out}
+ ### !!! ### 
+leaflet( data = cluster_demog ) %>% 
+    setView(lng = -77.0369, lat = 38.9072,  zoom=04) %>%           ### !!! ### 
+    
+    addProviderTiles( providers$NASAGIBS.ViirsEarthAtNight2012 ) %>%   
+    
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat = cluster_demog$lat_ctr 
+                )
+
+```
+
+
+
+---------------------------------------
+
+
+# 2. Pop-ups
+
+---------------------------------------
+
+##  Add Pop-ups
+To do this, we add ```popup = desired_popup_data_here``` as an argument into  ``` addMarkers()```.
+
+```{r add_popups}
+leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat=cluster_demog$lat_ctr 
+                , popup =  cluster_demog$Full_Name       ### !!! ###     
+                )  
+                
+
+```
+
+
+
+
+
+
+##  Add More Info to Pop-ups
+To do this, we just simply ```paste()``` the information together
+
+```{r paste_popups}
+
+ leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat=cluster_demog$lat_ctr 
+                , popup =  paste(   cluster_demog$Full_Name                ### !!! ###     
+                                  , cluster_demog$neighborhood_cluster ,sep=" "     ### !!! ### 
+                                  )                                        ### !!! ### 
+                )  
+```
+
+
+
+
+
+
+
+##  Format Pop-ups
+Let's separate the pop-up details with a line break.   To do this, assign the ```sep``` argument of ```paste()``` to ``` sep = "<br/>"```
+
+```{r format_popups}
+
+ leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addMarkers(   lng = cluster_demog$lon_ctr 
+                , lat=cluster_demog$lat_ctr 
+                , popup =  paste(   sep = "<br/>"                     ### !!! ###     
+                                  , cluster_demog$Full_Name          
+                                  , cluster_demog$neighborhood_cluster 
+                                  
+                                  )
+                )  
+```
+
+---------------------------------------
+
+# 3. Markers
+
+---------------------------------------
+
+## From Plain Markers to Circle Markers
+To do this, we will use ```addCircleMarkers()``` instead of ```addMarkers()```.  
+
+```{r}
+leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addCircleMarkers(   lng = cluster_demog$lon_ctr                      ### !!! ###
+                , lat=cluster_demog$lat_ctr 
+                , popup =  paste(   sep = "<br/>"                         
+                                  , cluster_demog$Full_Name          
+                                  , cluster_demog$neighborhood_cluster 
+                                  
+                                  )
+                )  
+```
+
+
+
+
+
+
+
+## Circle Marker Radius
+
+
+```{r}
+ leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addCircleMarkers(   lng = cluster_demog$lon_ctr                      ### !!! ###
+                , lat=cluster_demog$lat_ctr 
+                , popup =  paste(   sep = "<br/>"                         
+                                  , cluster_demog$Full_Name          
+                                  , cluster_demog$neighborhood_cluster 
+                                  )
+                , radius = cluster_demog$`Population,_2010`
+                )  
+
+```
+
+**Ew.** *Circles are so large that they fill the map!*
+
+
+
+##   Circle Marker Radius
+
+
+```{r}
+ leaflet( data = cluster_demog ) %>%
+    
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    addCircleMarkers(   lng = cluster_demog$lon_ctr                     
+                , lat=cluster_demog$lat_ctr 
+                , popup =  paste(   sep = "<br/>"                         
+                                  , cluster_demog$Full_Name          
+                                  , cluster_demog$neighborhood_cluster 
+                                  )
+                , radius = cluster_demog$`Population,_2010`/5000              ### !!! ###
+                )  
+
+```
+
+
+
+
+
+
+
+---------------------------------------
+
+# 4. Choropleths, GeoJSON, Spatial Polygons
+
+---------------------------------------
+
+*Oh My!*
+
+You might want this later: https://rstudio.github.io/leaflet/choropleths.html
+
+```{r, include=FALSE}
+library(jsonlite)
+geojson <- readLines("http://data.codefordc.org/dataset/8c0a1a57-8abf-4a29-abbb-ee2b890a878e/resource/3f9ce2d9-b438-4dab-a232-694cb80c7964/download/neighborhoodclusters.geojson"
+    , warn = FALSE) %>%
+  paste(collapse = "\n") %>%
+  fromJSON(simplifyVector = FALSE)
+
+
+
+```
+
+## Using package ```geojsonio```
+```{r}
+#library(geojsonio)
+cluster_outlines<-geojsonio::geojson_read("http://data.codefordc.org/dataset/8c0a1a57-8abf-4a29-abbb-ee2b890a878e/resource/3f9ce2d9-b438-4dab-a232-694cb80c7964/download/neighborhoodclusters.geojson", what = "sp")
+
+cluster_outlines$Cluster_num<-as.numeric(grep("([0-9]+).*$",  as.character(cluster_outlines$NAME)))
+```
+
+
+```{r}
+leaflet(cluster_outlines)  %>%
+  addTiles() %>% 
+    addPolygons()
+```
+
+
+## Color between the lines
+
+Choosing to color by 2010 population.
+
+```{r}
+#summary(cluster_demog$`Population,_2010`)
+cluster_outlines@data<-merge(cluster_outlines@data, cluster_demog, by="Cluster_num")
+
+cut_offs<-data.frame(bins=quantile(cluster_outlines$`Population,_2010`, c(0,.2,.3,.4,.5,.6,.7,.8,1)))
+bins <-c(0,cut_offs$bins)
+pal <- colorBin("YlOrRd", domain = cluster_outlines$`Population,_2010`, bins = bins)
+
+
+
+leaflet(cluster_outlines)  %>%
+  addTiles() %>% 
+    addPolygons(fillColor = ~pal(`Population,_2010`)                 ### !!! ###
+     )
+
+
+```
+
+## Make it easier to see
+
+
+```{r}
+leaflet(cluster_outlines)  %>%
+  addTiles() %>% 
+   addPolygons(fillColor = ~pal(`Population,_2010`)  
+      ,weight = 2,                                       ### !!! ###
+  opacity = 1,                                            ### !!! ###
+  color = "white",                                        ### !!! ###
+#  dashArray = "3",
+  fillOpacity = 0.7)
+
+```
+
+## Another option
+
+```{r}
+leaflet(cluster_outlines)  %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%              ### !!! ###
+   addPolygons(fillColor = ~pal(`Population,_2010`)  
+      ,weight = 1,
+  opacity = 1,
+  color = "white",
+  
+ # dashArray = "3",
+  fillOpacity = 0.6)
+
+```
+
+
+
+## Hover Acation!
+
+```{r}
+leaflet(cluster_outlines)  %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+   addPolygons(fillColor = ~pal(`Population,_2010`)  
+      ,weight = 1,
+  opacity = 1,
+  color = "white",
+  fillOpacity = 0.6,
+  highlight = highlightOptions(                     ### !!! ###
+    weight = 2,                                     ### !!! ###
+    fillOpacity = 0.75,                             ### !!! ###
+    bringToFront = TRUE)                            ### !!! ###
+  )
+
+```
+
+
+
+
+## Pop-ups
+
+```{r}
+labels <- sprintf(
+  "<strong>%s</strong><br/>Population: %g",
+  cluster_outlines$NBH_NAMES, cluster_outlines$`Population,_2010`
+) %>% lapply(htmltools::HTML)
+
+
+
+leaflet(cluster_outlines)  %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+   addPolygons(fillColor = ~pal(`Population,_2010`)  
+      ,weight = 1,
+  opacity = 1,
+  color = "white",
+  fillOpacity = 0.6,
+  
+  highlight = highlightOptions(
+    weight = 2,
+    fillOpacity = 0.75,
+    bringToFront = TRUE)
+  ,label = labels                                ### !!! ###
+  )
+
+```
+
+
+
+---------------------------------------
+
+# 5. More Resources
+
+---------------------------------------
+
+
+https://cran.r-project.org/web/packages/leaflet/leaflet.pdf
+
+https://rstudio.github.io/leaflet/
+
+https://rstudio.github.io/leaflet/morefeatures.html
+
+Choropleths:
+
+https://rstudio.github.io/leaflet/choropleths.html
+
+Getting Lat-Longs
+
+https://www.kaggle.com/joeleichter/us-zip-codes-with-lat-and-long
+
+
+---------------------------------------
+
+## Colors, Legends, and more
+
+
+
+
+
+
+
+
