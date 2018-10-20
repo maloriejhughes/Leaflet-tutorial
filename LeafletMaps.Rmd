@@ -284,18 +284,11 @@ leaflet( data = cluster_demog ) %>%
 
 You might want this later: https://rstudio.github.io/leaflet/choropleths.html
 
-```{r, include=FALSE}
-library(jsonlite)
-geojson <- readLines("http://data.codefordc.org/dataset/8c0a1a57-8abf-4a29-abbb-ee2b890a878e/resource/3f9ce2d9-b438-4dab-a232-694cb80c7964/download/neighborhoodclusters.geojson"
-    , warn = FALSE) %>%
-  paste(collapse = "\n") %>%
-  fromJSON(simplifyVector = FALSE)
 
-
-
-```
 
 ## Using package ```geojsonio```
+
+
 ```{r}
 #library(geojsonio)
 cluster_outlines<-geojsonio::geojson_read("http://data.codefordc.org/dataset/8c0a1a57-8abf-4a29-abbb-ee2b890a878e/resource/3f9ce2d9-b438-4dab-a232-694cb80c7964/download/neighborhoodclusters.geojson", what = "sp")
@@ -414,6 +407,21 @@ leaflet(cluster_outlines)  %>%
 ```
 
 
+## If the ```geojsonio``` package won't install
+
+If you can't get ```geojsonio``` to work, you will want to try using the ```jsonlite``` package paired with the function ```readLines()```.  This example is incomplete, but will at least get you past the first step of reading in the geojson. 
+
+
+```{r, eval=FALSE}
+
+library(jsonlite)
+
+geojson <- readLines("http://data.codefordc.org/dataset/8c0a1a57-8abf-4a29-abbb-ee2b890a878e/resource/3f9ce2d9-b438-4dab-a232-694cb80c7964/download/neighborhoodclusters.geojson"
+    , warn = FALSE) %>%
+  paste(collapse = "\n") %>%
+  fromJSON(simplifyVector = FALSE)
+  
+```
 
 ---------------------------------------
 
