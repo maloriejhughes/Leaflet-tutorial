@@ -436,6 +436,8 @@ https://rstudio.github.io/leaflet/
 
 https://rstudio.github.io/leaflet/morefeatures.html
 
+https://rstudio.github.io/leaflet/popups.html
+
 Choropleths:
 
 https://rstudio.github.io/leaflet/choropleths.html
