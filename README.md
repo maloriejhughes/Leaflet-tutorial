@@ -1,6 +1,13 @@
 # Leaflet-tutorial
 
 
+### see it here
+https://maloriejhughes.github.io/Leaflet-tutorial/
+
+
+### how to use
+Install the required packages by running the following R command: 
+
 
 
 Install the required packages by running the following R command: 
